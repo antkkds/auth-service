@@ -68,11 +68,11 @@ All endpoints at `/api/auth/*`:
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/api/auth/sign-up` | Create account |
-| POST | `/api/auth/sign-in` | Sign in |
+| POST | `/api/auth/sign-up/email` | Create account |
+| POST | `/api/auth/sign-in/email` | Sign in |
 | POST | `/api/auth/sign-out` | Sign out |
-| GET | `/api/auth/session` | Get current session |
-| POST | `/api/auth/forgot-password` | Request password reset |
+| GET | `/api/auth/get-session` | Get current session |
+| POST | `/api/auth/request-password-reset` | Request password reset |
 | POST | `/api/auth/reset-password` | Reset password |
 | GET | `/api/auth/verify-email` | Verify email address |
 | GET | `/api/auth/ok` | Health check |

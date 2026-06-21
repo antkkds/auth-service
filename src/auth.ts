@@ -8,15 +8,18 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
-  // Security settings (matches the best practices from the video)
+  // Session follows the video's principles:
+  // - Short-lived sessions (expire after inactivity)
+  // - Automatic rotation when active
   session: {
-    expiresIn: 60 * 15, // 15 minutes (access token)
-    updateAge: 60 * 60 * 24 * 7, // Refresh every 7 days
-    freshAge: 60 * 5, // Fresh session age: 5 minutes
+    expiresIn: 60 * 60 * 24, // 24 hours — session dies after inactivity
+    updateAge: 60 * 60,       // 1 hour — refresh if user is active
+    freshAge: 60 * 30,        // 30 min — no DB writes during this window
   },
-  // Rate limiting to prevent brute force
+  // Rate limiting — enabled for both dev and prod
   rateLimit: {
-    window: 60, // 1 minute window
-    max: 10, // max 10 requests per window
+    enabled: true,
+    window: 60,   // 1 minute window
+    max: 100,     // max 100 requests per window
   },
 });
