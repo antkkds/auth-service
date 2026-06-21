@@ -20,8 +20,22 @@ app.use("/dashboard", createDashboardRouter());
 // Health check
 app.get("/health", (_req, res) => res.json({ status: "ok", service: "auth-service", version: "1.0.0" }));
 
-app.listen(port, "0.0.0.0", () => {
-  console.log(`🔐 Auth service running at http://localhost:${port}`);
-  console.log(`   📊 Dashboard at http://localhost:${port}/dashboard/`);
-  console.log(`   🔌 API at http://localhost:${port}/api/auth/`);
-});
+// Run database migrations before starting
+async function start() {
+  try {
+    const ctx = await auth.$context;
+    if (ctx.runMigrations) {
+      await ctx.runMigrations();
+      console.log("✅ Database migrations complete");
+    }
+  } catch (e) {
+    console.error("⚠️  Migration warning (tables may already exist):", (e as Error).message);
+  }
+
+  app.listen(port, "0.0.0.0", () => {
+    console.log(`🔐 Auth service running at http://localhost:${port}`);
+    console.log(`   📊 Dashboard at http://localhost:${port}/dashboard/`);
+    console.log(`   🔌 API at http://localhost:${port}/api/auth/`);
+  });
+}
+start();
