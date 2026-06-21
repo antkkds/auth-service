@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auth Service Dashboard</title>
+  <link rel="stylesheet" href="/dashboard/styles.css">
+</head>
+<body>
+  <nav class="sidebar">
+    <div class="sidebar-header">
+      <h2>🔐 Auth Service</h2>
+      <span class="badge badge-ok">Running</span>
+    </div>
+    <ul class="sidebar-nav">
+      <li><a href="/dashboard/" class="active">📊 Overview</a></li>
+      <li><a href="/dashboard/setup">🚀 Setup Guide</a></li>
+      <li><a href="/dashboard/config">⚙️ Configuration</a></li>
+      <li><a href="/dashboard/api">🔌 API Playground</a></li>
+    </ul>
+    <div class="sidebar-footer">
+      <a href="https://github.com/antkkds/auth-service" target="_blank">GitHub</a>
+      <a href="https://better-auth.com/docs" target="_blank">Better Auth Docs</a>
+    </div>
+  </nav>
+
+  <main class="content">
+    <header>
+      <h1>📊 Overview</h1>
+      <p>Self-hosted authentication service powered by Better Auth + PostgreSQL</p>
+    </header>
+
+    <section class="cards">
+      <div class="card">
+        <h3>📡 Service Status</h3>
+        <div id="service-status" class="status-list">
+          <div class="status-row"><span>API Server</span><span class="status-ok">✅ Online</span></div>
+          <div class="status-row"><span>Database</span><span id="db-status" class="status-pending">⏳ Checking...</span></div>
+          <div class="status-row"><span>Rate Limiting</span><span class="status-ok">✅ Active</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>⚡ Quick Actions</h3>
+        <div class="quick-actions">
+          <a href="/dashboard/setup" class="btn">🚀 Setup Guide</a>
+          <a href="/dashboard/config" class="btn">⚙️ Edit Config</a>
+          <a href="/dashboard/api" class="btn">🔌 Test API</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>🔐 Current Session Config</h3>
+        <div id="session-config" class="config-preview">
+          <pre><code>session: {
+  expiresIn: 86400,  // 24 hours
+  updateAge: 3600,   // 1 hour
+  freshAge: 1800,    // 30 min
+}</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <section class="card full-width">
+      <h3>📋 API Endpoints</h3>
+      <table class="endpoints-table">
+        <thead>
+          <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="method post">POST</span></td><td><code>/api/auth/sign-up/email</code></td><td>Create a new user account</td></tr>
+          <tr><td><span class="method post">POST</span></td><td><code>/api/auth/sign-in/email</code></td><td>Sign in with email + password</td></tr>
+          <tr><td><span class="method post">POST</span></td><td><code>/api/auth/sign-out</code></td><td>Sign out current session</td></tr>
+          <tr><td><span class="method get">GET</span></td><td><code>/api/auth/get-session</code></td><td>Get current session data</td></tr>
+          <tr><td><span class="method post">POST</span></td><td><code>/api/auth/request-password-reset</code></td><td>Request password reset email</td></tr>
+          <tr><td><span class="method post">POST</span></td><td><code>/api/auth/reset-password</code></td><td>Reset password with token</td></tr>
+          <tr><td><span class="method get">GET</span></td><td><code>/api/auth/verify-email</code></td><td>Verify email address</td></tr>
+          <tr><td><span class="method get">GET</span></td><td><code>/api/auth/ok</code></td><td>Health check</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card full-width">
+      <h3>📖 How This Works</h3>
+      <div class="how-it-works">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div><strong>User signs up</strong> → POST /api/auth/sign-up/email with name, email, password</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div><strong>Better Auth creates session</strong> → Returns session cookie (short-lived, auto-rotating)</div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div><strong>Your frontend uses session</strong> → Call GET /api/auth/get-session to verify user</div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div><strong>Session auto-refreshes</strong> → If user is active, session extends. Idle = expires.</div>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

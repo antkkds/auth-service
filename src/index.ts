@@ -4,6 +4,7 @@ import express from "express";
 import cors from "cors";
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "./auth.js";
+import { createDashboardRouter } from "./dashboard-router.js";
 
 const app = express();
 const port = parseInt(process.env.PORT || "3005", 10);
@@ -25,6 +26,9 @@ app.all("/api/auth/*splat", toNodeHandler(auth));
 // Regular JSON middleware for other routes
 app.use(express.json());
 
+// Dashboard UI — available at /dashboard/
+app.use("/dashboard", createDashboardRouter());
+
 // Health check
 app.get("/", (_req, res) => {
   res.json({ status: "ok", service: "auth-service", version: "1.0.0" });
@@ -32,5 +36,6 @@ app.get("/", (_req, res) => {
 
 app.listen(port, () => {
   console.log(`🔐 Auth service running at http://localhost:${port}`);
-  console.log(`   Auth API at http://localhost:${port}/api/auth/ok`);
+  console.log(`   📊 Dashboard at http://localhost:${port}/dashboard/`);
+  console.log(`   🔌 Auth API at http://localhost:${port}/api/auth/ok`);
 });

@@ -4,9 +4,10 @@ A production-ready, self-hosted authentication service built with [Better Auth](
 
 ## Features
 
+- **📊 Dashboard UI** — Web-based dashboard at `/dashboard/` with setup guide, config viewer, and API playground
 - **Email & Password** — Sign up, sign in, email verification, password reset
-- **Session Management** — Short-lived access tokens + rotating refresh tokens
-- **Rate Limiting** — Built-in brute force protection
+- **Session Management** — Short-lived sessions (24h) with auto-rotation (1h refresh window)
+- **Rate Limiting** — Built-in brute force protection (100 req/min)
 - **PostgreSQL** — Industry-standard database
 
 ### Optional Plugins (add as needed)

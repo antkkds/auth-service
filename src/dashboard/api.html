@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Playground — Auth Service Dashboard</title>
+  <link rel="stylesheet" href="/dashboard/styles.css">
+</head>
+<body>
+  <nav class="sidebar">
+    <div class="sidebar-header">
+      <h2>🔐 Auth Service</h2>
+      <span class="badge badge-ok">Running</span>
+    </div>
+    <ul class="sidebar-nav">
+      <li><a href="/dashboard/">📊 Overview</a></li>
+      <li><a href="/dashboard/setup">🚀 Setup Guide</a></li>
+      <li><a href="/dashboard/config">⚙️ Configuration</a></li>
+      <li><a href="/dashboard/api" class="active">🔌 API Playground</a></li>
+    </ul>
+    <div class="sidebar-footer">
+      <a href="https://github.com/antkkds/auth-service" target="_blank">GitHub</a>
+      <a href="https://better-auth.com/docs" target="_blank">Better Auth Docs</a>
+    </div>
+  </nav>
+
+  <main class="content">
+    <header>
+      <h1>🔌 API Playground</h1>
+      <p>Test auth endpoints directly. Creates real data — use with care.</p>
+    </header>
+
+    <!-- Health Check -->
+    <section class="card full-width">
+      <h3>🩺 Health Check</h3>
+      <button class="btn" onclick="checkHealth()">Test Connection</button>
+      <pre id="health-result" class="result-box">Click to test...</pre>
+    </section>
+
+    <!-- Sign Up -->
+    <section class="card full-width">
+      <h3>📝 Create Test User</h3>
+      <div class="form-row">
+        <input type="text" id="signup-name" placeholder="Name" value="Test User">
+        <input type="email" id="signup-email" placeholder="Email" value="test@example.com">
+        <input type="password" id="signup-password" placeholder="Password" value="password123">
+        <button class="btn" onclick="signUp()">Sign Up</button>
+      </div>
+      <pre id="signup-result" class="result-box">Fill in fields and click Sign Up...</pre>
+    </section>
+
+    <!-- Sign In -->
+    <section class="card full-width">
+      <h3>🔑 Sign In</h3>
+      <div class="form-row">
+        <input type="email" id="signin-email" placeholder="Email" value="test@example.com">
+        <input type="password" id="signin-password" placeholder="Password" value="password123">
+        <button class="btn" onclick="signIn()">Sign In</button>
+      </div>
+      <pre id="signin-result" class="result-box">Sign in to test...</pre>
+    </section>
+
+    <!-- Get Session -->
+    <section class="card full-width">
+      <h3>👤 Get Current Session</h3>
+      <button class="btn" onclick="getSession()">Check Session</button>
+      <pre id="session-result" class="result-box">Sign in first, then check...</pre>
+    </section>
+
+    <!-- Sign Out -->
+    <section class="card full-width">
+      <h3>🚪 Sign Out</h3>
+      <button class="btn" onclick="signOut()">Sign Out</button>
+      <pre id="signout-result" class="result-box">Click to sign out...</pre>
+    </section>
+  </main>
+
+  <script>
+    const API = window.location.origin + '/api/auth';
+
+    async function apiCall(method, path, body) {
+      const opts = {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+      };
+      if (body) opts.body = JSON.stringify(body);
+      try {
+        const res = await fetch(API + path, opts);
+        const text = await res.text();
+        let json;
+        try { json = JSON.parse(text); } catch { json = text; }
+        return { status: res.status, data: json };
+      } catch (err) {
+        return { status: 'error', data: err.message };
+      }
+    }
+
+    function show(el, result) {
+      document.getElementById(el).textContent = JSON.stringify(result, null, 2);
+    }
+
+    async function checkHealth() {
+      const r = await apiCall('GET', '/ok');
+      show('health-result', r);
+    }
+
+    async function signUp() {
+      const name = document.getElementById('signup-name').value;
+      const email = document.getElementById('signup-email').value;
+      const password = document.getElementById('signup-password').value;
+      const r = await apiCall('POST', '/sign-up/email', { name, email, password });
+      show('signup-result', r);
+    }
+
+    async function signIn() {
+      const email = document.getElementById('signin-email').value;
+      const password = document.getElementById('signin-password').value;
+      const r = await apiCall('POST', '/sign-in/email', { email, password });
+      show('signin-result', r);
+    }
+
+    async function getSession() {
+      const r = await apiCall('GET', '/get-session');
+      show('session-result', r);
+    }
+
+    async function signOut() {
+      const r = await apiCall('POST', '/sign-out');
+      show('signout-result', r);
+    }
+  </script>
+</body>
+</html>

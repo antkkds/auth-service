@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Setup Guide — Auth Service Dashboard</title>
+  <link rel="stylesheet" href="/dashboard/styles.css">
+</head>
+<body>
+  <nav class="sidebar">
+    <div class="sidebar-header">
+      <h2>🔐 Auth Service</h2>
+      <span class="badge badge-ok">Running</span>
+    </div>
+    <ul class="sidebar-nav">
+      <li><a href="/dashboard/">📊 Overview</a></li>
+      <li><a href="/dashboard/setup" class="active">🚀 Setup Guide</a></li>
+      <li><a href="/dashboard/config">⚙️ Configuration</a></li>
+      <li><a href="/dashboard/api">🔌 API Playground</a></li>
+    </ul>
+    <div class="sidebar-footer">
+      <a href="https://github.com/antkkds/auth-service" target="_blank">GitHub</a>
+      <a href="https://better-auth.com/docs" target="_blank">Better Auth Docs</a>
+    </div>
+  </nav>
+
+  <main class="content">
+    <header>
+      <h1>🚀 Setup Guide</h1>
+      <p>Step-by-step instructions for beginners. Copy these samples directly.</p>
+    </header>
+
+    <!-- Step 0: Prerequisites -->
+    <section class="card full-width setup-step" data-step="0">
+      <div class="step-header">
+        <span class="step-badge">Prerequisites</span>
+        <h3>What You Need Before Starting</h3>
+      </div>
+      <ul class="checklist">
+        <li>☐ A <strong>Railway</strong> account (free at railway.com) — or any Node.js host</li>
+        <li>☐ A <strong>PostgreSQL</strong> database (Railway gives you one free)</li>
+        <li>☐ <strong>Node.js 20+</strong> installed on your machine (for local testing)</li>
+        <li>☐ A <strong>GitHub</strong> account to clone the repo</li>
+      </ul>
+    </section>
+
+    <!-- Step 1 -->
+    <section class="card full-width setup-step" data-step="1">
+      <div class="step-header">
+        <span class="step-badge">Step 1</span>
+        <h3>Clone the Repository</h3>
+      </div>
+      <div class="sample-block">
+        <div class="sample-header">Terminal</div>
+        <pre><code>git clone https://github.com/antkkds/auth-service.git
+cd auth-service
+npm install</code></pre>
+      </div>
+      <p class="hint">💡 Make sure you have Node.js 20+ installed first.</p>
+    </section>
+
+    <!-- Step 2 -->
+    <section class="card full-width setup-step" data-step="2">
+      <div class="step-header">
+        <span class="step-badge">Step 2</span>
+        <h3>Set Up Environment Variables</h3>
+      </div>
+      <p>Copy the sample env file and fill in your values:</p>
+      <div class="sample-block">
+        <div class="sample-header">.env — Copy this into your project</div>
+        <pre><code># Server
+PORT=3005
+BETTER_AUTH_URL=http://localhost:3005
+FRONTEND_URL=http://localhost:5173
+
+# Security — GENERATE YOUR OWN with: openssl rand -base64 32
+BETTER_AUTH_SECRET=replace-with-your-32-char-secret-key-here!!
+
+# Database — get this from Railway after creating a PostgreSQL DB
+DATABASE_URL=postgresql://postgres:password@your-railway-host:5432/auth_db</code></pre>
+      </div>
+
+      <div class="info-box">
+        <strong>🔑 Generate a secret key:</strong>
+        <div class="sample-block mini">
+          <pre><code>openssl rand -base64 32</code></pre>
+        </div>
+        <p>Paste the output as your <code>BETTER_AUTH_SECRET</code>.</p>
+      </div>
+
+      <div class="info-box">
+        <strong>🐘 Get your PostgreSQL URL from Railway:</strong>
+        <ol>
+          <li>Go to Railway dashboard → New Project → Provision PostgreSQL</li>
+          <li>Click on the PostgreSQL service → Connect tab</li>
+          <li>Copy the <code>DATABASE_URL</code> connection string</li>
+          <li>Paste it into your <code>.env</code> file</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- Step 3 -->
+    <section class="card full-width setup-step" data-step="3">
+      <div class="step-header">
+        <span class="step-badge">Step 3</span>
+        <h3>Run Database Migrations</h3>
+      </div>
+      <p>Better Auth auto-creates the required tables (users, sessions, etc.):</p>
+      <div class="sample-block">
+        <div class="sample-header">Terminal</div>
+        <pre><code>npx auth@latest generate   # Generate SQL schema
+npx auth@latest migrate    # Apply to your database</code></pre>
+      </div>
+      <p class="hint">💡 This creates tables: <code>user</code>, <code>session</code>, <code>account</code>, <code>verification</code></p>
+    </section>
+
+    <!-- Step 4 -->
+    <section class="card full-width setup-step" data-step="4">
+      <div class="step-header">
+        <span class="step-badge">Step 4</span>
+        <h3>Start the Auth Server</h3>
+      </div>
+      <div class="sample-block">
+        <div class="sample-header">Development mode</div>
+        <pre><code>npm run dev</code></pre>
+      </div>
+      <p>You should see:</p>
+      <div class="sample-block mini">
+        <pre><code>🔐 Auth service running at http://localhost:3005
+   Auth API at http://localhost:3005/api/auth/ok</code></pre>
+      </div>
+      <p>Verify it's working:</p>
+      <div class="sample-block mini">
+        <pre><code>curl http://localhost:3005/api/auth/ok
+# → { "ok": true }</code></pre>
+      </div>
+    </section>
+
+    <!-- Step 5 -->
+    <section class="card full-width setup-step" data-step="5">
+      <div class="step-header">
+        <span class="step-badge">Step 5</span>
+        <h3>Connect Your Frontend (Sample Code)</h3>
+      </div>
+      <p>Add this to your React / Vue / Svelte frontend:</p>
+
+      <div class="sample-block">
+        <div class="sample-header">Install the client SDK</div>
+        <pre><code>npm install better-auth</code></pre>
+      </div>
+
+      <div class="sample-block">
+        <div class="sample-header">lib/auth-client.ts — Create this file</div>
+        <pre><code>import { createAuthClient } from "better-auth/client"
+
+export const authClient = createAuthClient({
+  baseURL: "http://localhost:3005" // Your auth server URL
+})</code></pre>
+      </div>
+
+      <div class="sample-block">
+        <div class="sample-header">Example: Sign Up Form</div>
+        <pre><code>import { authClient } from "./lib/auth-client"
+
+async function handleSignUp(email, password, name) {
+  const { data, error } = await authClient.signUp.email({
+    email,
+    password,
+    name,
+  })
+
+  if (error) {
+    console.error("Sign up failed:", error.message)
+    return
+  }
+
+  console.log("User created:", data.user)
+  // Session cookie is set automatically
+}</code></pre>
+      </div>
+
+      <div class="sample-block">
+        <div class="sample-header">Example: Check if User is Logged In</div>
+        <pre><code>import { authClient } from "./lib/auth-client"
+
+const { data: session } = await authClient.getSession()
+if (session) {
+  console.log("Logged in as:", session.user.name)
+} else {
+  console.log("Not logged in")
+}</code></pre>
+      </div>
+    </section>
+
+    <!-- Step 6 -->
+    <section class="card full-width setup-step" data-step="6">
+      <div class="step-header">
+        <span class="step-badge">Step 6</span>
+        <h3>Deploy to Railway</h3>
+      </div>
+      <p>One-click deployment:</p>
+      <ol>
+        <li>Push your repo to GitHub (already done ✅)</li>
+        <li>Go to <a href="https://railway.app" target="_blank">railway.app</a> → New Project → Deploy from GitHub repo</li>
+        <li>Select <code>antkkds/auth-service</code></li>
+        <li>Add a PostgreSQL database (Railway provisions it)</li>
+        <li>Set environment variables in Railway dashboard:
+          <ul>
+            <li><code>BETTER_AUTH_SECRET</code> ← your secret key</li>
+            <li><code>BETTER_AUTH_URL</code> ← https://your-app.railway.app</li>
+            <li><code>FRONTEND_URL</code> ← https://your-frontend.com</li>
+          </ul>
+        </li>
+        <li>Railway auto-detects the build command and starts the server</li>
+      </ol>
+      <p class="hint">💡 Railway automatically sets <code>DATABASE_URL</code> for you when you add PostgreSQL.</p>
+    </section>
+
+    <!-- Troubleshooting -->
+    <section class="card full-width">
+      <div class="step-header">
+        <span class="step-badge">⚠️</span>
+        <h3>Troubleshooting</h3>
+      </div>
+      <table class="troubleshoot-table">
+        <tr><td><code>Failed to initialize database adapter</code></td><td>Check your <code>DATABASE_URL</code> in .env</td></tr>
+        <tr><td><code>BETTER_AUTH_SECRET is not set</code></td><td>Generate one with <code>openssl rand -base64 32</code></td></tr>
+        <tr><td>404 on API endpoints</td><td>Make sure you're hitting <code>/api/auth/*</code> paths</td></tr>
+        <tr><td>CORS errors from frontend</td><td>Set <code>FRONTEND_URL</code> to match your frontend's origin</td></tr>
+      </table>
+    </section>
+  </main>
+</body>
+</html>

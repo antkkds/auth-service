@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Configuration — Auth Service Dashboard</title>
+  <link rel="stylesheet" href="/dashboard/styles.css">
+</head>
+<body>
+  <nav class="sidebar">
+    <div class="sidebar-header">
+      <h2>🔐 Auth Service</h2>
+      <span class="badge badge-ok">Running</span>
+    </div>
+    <ul class="sidebar-nav">
+      <li><a href="/dashboard/">📊 Overview</a></li>
+      <li><a href="/dashboard/setup">🚀 Setup Guide</a></li>
+      <li><a href="/dashboard/config" class="active">⚙️ Configuration</a></li>
+      <li><a href="/dashboard/api">🔌 API Playground</a></li>
+    </ul>
+    <div class="sidebar-footer">
+      <a href="https://github.com/antkkds/auth-service" target="_blank">GitHub</a>
+      <a href="https://better-auth.com/docs" target="_blank">Better Auth Docs</a>
+    </div>
+  </nav>
+
+  <main class="content">
+    <header>
+      <h1>⚙️ Configuration</h1>
+      <p>View and customize your auth service settings. Edit <code>.env</code> and restart to apply changes.</p>
+    </header>
+
+    <!-- Current Config -->
+    <section class="card full-width">
+      <h3>📄 Current Environment</h3>
+      <div id="env-display" class="env-grid">
+        <div class="env-row">
+          <span class="env-key">BETTER_AUTH_URL</span>
+          <span class="env-val" id="env-url">loading...</span>
+        </div>
+        <div class="env-row">
+          <span class="env-key">FRONTEND_URL</span>
+          <span class="env-val" id="env-frontend">loading...</span>
+        </div>
+        <div class="env-row">
+          <span class="env-key">PORT</span>
+          <span class="env-val" id="env-port">loading...</span>
+        </div>
+        <div class="env-row">
+          <span class="env-key">DATABASE</span>
+          <span class="env-val" id="env-db">loading...</span>
+        </div>
+      </div>
+      <p class="hint">💡 Edit these in your <code>.env</code> file, then restart the server.</p>
+    </section>
+
+    <!-- Config Editor Reference -->
+    <section class="card full-width">
+      <h3>📝 All Config Options</h3>
+      <table class="config-table">
+        <thead>
+          <tr><th>Variable</th><th>Required</th><th>Default</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>PORT</code></td>
+            <td><span class="tag-optional">Optional</span></td>
+            <td><code>3005</code></td>
+            <td>Port the auth server listens on</td>
+          </tr>
+          <tr>
+            <td><code>BETTER_AUTH_SECRET</code></td>
+            <td><span class="tag-required">Required</span></td>
+            <td>—</td>
+            <td>32+ char random string for encryption. Generate: <code>openssl rand -base64 32</code></td>
+          </tr>
+          <tr>
+            <td><code>BETTER_AUTH_URL</code></td>
+            <td><span class="tag-required">Required</span></td>
+            <td>—</td>
+            <td>Public URL of this auth service (e.g. <code>https://your-app.railway.app</code>)</td>
+          </tr>
+          <tr>
+            <td><code>DATABASE_URL</code></td>
+            <td><span class="tag-required">Required</span></td>
+            <td>—</td>
+            <td>PostgreSQL connection string</td>
+          </tr>
+          <tr>
+            <td><code>FRONTEND_URL</code></td>
+            <td><span class="tag-required">Required</span></td>
+            <td><code>http://localhost:5173</code></td>
+            <td>Your frontend origin (for CORS)</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Session Config Visual -->
+    <section class="card full-width">
+      <h3>⏱️ Session Timeline Visual</h3>
+      <p>How Better Auth manages sessions:</p>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="tl-label">User Logs In</div>
+          <div class="tl-bar fresh">Fresh Zone (30 min)</div>
+          <div class="tl-note">No DB writes during this window</div>
+        </div>
+        <div class="timeline-item">
+          <div class="tl-label">Active User</div>
+          <div class="tl-bar active">Session extends +24h on activity</div>
+          <div class="tl-note">Refresh triggered every 1 hour</div>
+        </div>
+        <div class="timeline-item">
+          <div class="tl-label">User Goes Idle</div>
+          <div class="tl-bar expires">Session expires after 24h idle</div>
+          <div class="tl-note">Must sign in again</div>
+        </div>
+      </div>
+      <div class="info-box">
+        <strong>💡 This follows the video's best practices:</strong> Short session windows + automatic rotation. If a token is stolen, it's only valid for max 24 hours (or less if the user logs out).
+      </div>
+    </section>
+
+    <!-- Sample Configs -->
+    <section class="card full-width">
+      <h3>📋 Sample Configurations</h3>
+
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="local">🖥️ Local Dev</button>
+        <button class="tab-btn" data-tab="railway">☁️ Railway Production</button>
+        <button class="tab-btn" data-tab="staging">🧪 Staging</button>
+      </div>
+
+      <div class="tab-content active" id="tab-local">
+        <div class="sample-block">
+          <pre><code>PORT=3005
+BETTER_AUTH_SECRET=dev-secret-key-at-least-32-characters-long!!
+BETTER_AUTH_URL=http://localhost:3005
+DATABASE_URL=postgresql://postgres:password@localhost:5432/auth_dev
+FRONTEND_URL=http://localhost:5173</code></pre>
+        </div>
+      </div>
+
+      <div class="tab-content" id="tab-railway">
+        <div class="sample-block">
+          <pre><code>PORT=3005
+BETTER_AUTH_SECRET=your-production-secret-from-openssl-rand!!
+BETTER_AUTH_URL=https://your-app.up.railway.app
+# DATABASE_URL is auto-set by Railway PostgreSQL add-on
+FRONTEND_URL=https://your-frontend.vercel.app</code></pre>
+        </div>
+      </div>
+
+      <div class="tab-content" id="tab-staging">
+        <div class="sample-block">
+          <pre><code>PORT=3005
+BETTER_AUTH_SECRET=staging-secret-key-at-least-32-characters-long!
+BETTER_AUTH_URL=https://auth-staging.up.railway.app
+DATABASE_URL=postgresql://postgres:password@staging-host:5432/auth_staging
+FRONTEND_URL=https://staging.your-frontend.com</code></pre>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script>
+    // Tab switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+      });
+    });
+    // Load env vars from API
+    fetch('/api/env')
+      .then(r => r.json())
+      .then(data => {
+        document.getElementById('env-url').textContent = data.BETTER_AUTH_URL || 'not set';
+        document.getElementById('env-frontend').textContent = data.FRONTEND_URL || 'not set';
+        document.getElementById('env-port').textContent = data.PORT || '3005';
+        document.getElementById('env-db').textContent = data.DATABASE_URL ? '✅ Connected' : '❌ Not set';
+      })
+      .catch(() => {
+        document.getElementById('env-url').textContent = '❌ Could not load';
+      });
+  </script>
+</body>
+</html>
